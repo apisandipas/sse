@@ -5,7 +5,7 @@ export interface Point {
   x: number;
   y: number;
   z: number;
-  color?: string; // Optional color
+  color?: string;
 }
 
 export const PointCloud = ({ points }: { points: Point[] }) => {
@@ -50,13 +50,6 @@ export const PointCloud = ({ points }: { points: Point[] }) => {
   return (
     <points ref={cloudRef}>
       <bufferGeometry ref={geometryRef}>
-        {/* <bufferAttribute
-          attach="attributes-position"
-          array={points}
-          itemSize={3}
-          count={points.length / 3}
-          needsUpdate={true}
-        /> */}
         <pointsMaterial
           size={0.05} // Adjust size of points
           sizeAttenuation // Makes size adjust based on distance
