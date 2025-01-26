@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { PointCloud, Point } from "./PointCloud";
+import { PointCloud } from "./PointCloud";
 
 function App() {
   const [streamData, setStreamData] = useState<{
-    hello: string;
-    points: Point[];
+    value: string;
+    points: number[];
+    time: string;
   } | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
   const [formValue, setFormValue] = useState<string>("");
@@ -53,40 +54,56 @@ function App() {
     stopEventSource();
 
     console.log("Updating database with value:", formValue);
+
     await fetch("http://localhost:5000/update", {
       method: "POST",
       body: JSON.stringify({ name: "First Name", value: formValue }),
       headers: { "Content-Type": "application/json" },
     });
-
+    setFormValue("");
     console.log("Database updated.");
     startEventSource();
   };
 
   return (
     <div>
-      <div>{streamData && streamData.hello}</div>
-      <div>Count: {msgCount}</div>
-      <form>
+      <div
+        style={{
+          position: "absolute",
+          display: "flex",
+          flexDirection: "column",
+          zIndex: 99999,
+          top: 0,
+          left: 0,
+        }}
+      >
+        <div>SSE Event Count: {msgCount}</div>
         <label>
-          First Name
-          <input
-            type="text"
-            name="value"
-            value={formValue}
-            onChange={(e) => setFormValue(e.target.value)}
-          />
+          Time: {streamData && streamData.time}
+          <br />
+          Value from Server: <br />
+          {streamData && streamData.value}
         </label>
+        <input
+          type="text"
+          name="value"
+          value={formValue}
+          onChange={(e) => setFormValue(e.target.value)}
+        />
         <button onClick={handleFormSubmit} type="submit">
           Change Value
         </button>
-      </form>
+      </div>
       {streamData?.points && (
-        <div
-          style={{ border: "1px solid pink", width: "80vw", height: "80vh" }}
-        >
-          <Canvas>
-            <OrbitControls />
+        <div style={{ width: "100vw", height: "100vh" }}>
+          <Canvas
+            camera={{
+              position: [0, 0, 100],
+              fov: 25,
+            }}
+          >
+            <OrbitControls autoRotate />
+            <ambientLight intensity={0.5} />
             <PointCloud points={streamData.points} />
           </Canvas>
         </div>

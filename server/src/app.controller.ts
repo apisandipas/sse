@@ -2,19 +2,23 @@ import { Controller, Sse, Body, Post, MessageEvent } from '@nestjs/common';
 import { SettingsService } from './resources/settings/settings.service';
 import { interval, map, Observable } from 'rxjs';
 
-const generateRGBColor = () => {
-  const r = Math.floor(Math.random() * 256); // Random value between 0-255
-  const g = Math.floor(Math.random() * 256);
-  const b = Math.floor(Math.random() * 256);
-  return `rgb(${r},${g},${b})`;
-};
 const generatePointCloud = () => {
-  return Array.from({ length: 500 }, () => ({
-    x: Math.random() * 10 - 5,
-    y: Math.random() * 10 - 5,
-    z: Math.random() * 10 - 5,
-    color: generateRGBColor(),
-  }));
+  const points: number[] = [];
+  const pointCount = 1500;
+  const radius = 25;
+
+  for (let i = 0; i < pointCount; i++) {
+    const theta = Math.acos(2 * Math.random() - 1); // Polar angle
+    const phi = 2 * Math.PI * Math.random(); // Azimuthal angle
+
+    // Convert to Cartesian coordinates
+    const x = radius * Math.sin(theta) * Math.cos(phi);
+    const y = radius * Math.sin(theta) * Math.sin(phi);
+    const z = radius * Math.cos(theta);
+    points.push(x, y, z);
+  }
+
+  return points;
 };
 
 @Controller()
@@ -31,7 +35,8 @@ export class AppController {
           ({
             data: {
               points: generatePointCloud(),
-              hello: `${setting?.value} @ ${Date.now()}`,
+              value: setting?.value,
+              time: Date.now(),
             },
           }) as MessageEvent,
       ),
