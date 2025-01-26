@@ -1,0 +1,26 @@
+# Stage: Base setup
+FROM node:20 AS base
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package.json and yarn.lock for dependency installation
+COPY client/package.json client/yarn.lock ./client/
+COPY server/package.json server/yarn.lock ./server/
+
+# Install dependencies for client and server
+RUN cd client && yarn install
+RUN cd server && yarn install
+
+# Copy source files (excluding files in .dockerignore)
+COPY client ./client
+COPY server ./server
+COPY server/prisma ./prisma
+COPY server/.env ./.env
+
+# Ensure PATH includes local node_modules binaries for both client and server
+ENV PATH=/app/client/node_modules/.bin:/app/server/node_modules/.bin:$PATH
+
+# Expose ports for both services
+EXPOSE 3000 5000
+

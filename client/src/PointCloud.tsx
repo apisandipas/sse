@@ -29,7 +29,7 @@ export const PointCloud = ({ points }: { points: Point[] }) => {
       const colors = new Float32Array(
         points.flatMap(({ color }) => {
           if (color) {
-            console.log("color", color);
+            /* console.log("color", color); */
             const rgb = new THREE.Color(color);
             return [rgb.r, rgb.g, rgb.b];
           }
@@ -54,7 +54,6 @@ export const PointCloud = ({ points }: { points: Point[] }) => {
           size={0.05} // Adjust size of points
           sizeAttenuation // Makes size adjust based on distance
           vertexColors // Use per-point colors
-          transparent
           opacity={0.9} // Optional transparency
         />
       </bufferGeometry>

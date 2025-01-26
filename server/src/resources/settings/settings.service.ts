@@ -6,11 +6,15 @@ export class SettingsService {
   constructor(private prismaService: PrismaService) {}
 
   async updateValue(name: string, value: string) {
-    return await this.prismaService.setting.update({
+    return await this.prismaService.setting.upsert({
       where: {
         name: name,
       },
-      data: {
+      update: {
+        value: value,
+      },
+      create: {
+        name: name,
         value: value,
       },
     });

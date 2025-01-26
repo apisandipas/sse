@@ -25,7 +25,6 @@ function App() {
       const data = JSON.parse(event.data);
       setStreamData(data);
       setMsgCount((oldCount) => oldCount + 1);
-      console.log(data.points);
     };
 
     newEventSource.onerror = () => {
